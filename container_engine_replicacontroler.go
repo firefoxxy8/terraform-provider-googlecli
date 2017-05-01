@@ -50,7 +50,17 @@ func CreateKubeRC(name, dockerImage, external_port string, optional_args, env_ar
 	run_replicacontroler.Stderr = &stderr
 	err := run_replicacontroler.Run()
 	if err != nil {
-		return "", fmt.Errorf("Error creating replicacontroler named %q with error %q and stdout: %q", name, stderr.String(), stdout.String())
+		for i := 0; i < 5; i++ {
+			time.Sleep(5 * time.Second)
+			err := run_replicacontroler.Run()
+			if err == nil {
+				fmt.Println("Success: run_replicacontroler.Run()")
+				break
+			} else if i == 5 && err != nil {
+				fmt.Println("Failed: run_replicacontroler.Run()")
+				return "", fmt.Errorf("Error creating replicacontroler named %q with error %q and stdout: %q", name, stderr.String(), stdout.String())
+			}
+		}
 	}
 
 	var runReturn kubectlItem
@@ -103,7 +113,18 @@ func ReadKubeRC(name, external_port string) (int, string, error) {
 	get_replicacontrolers.Stderr = &stderr
 	err := get_replicacontrolers.Run()
 	if err != nil {
-		return -1, "", fmt.Errorf("Error listing replica controlers: %q with stdout: %q", stderr.String(), stdout.String())
+		for i := 0; i < 5; i++ {
+			time.Sleep(5 * time.Second)
+			fmt.Println("Trying: get_replicacontrolers.Run()")
+			err := get_replicacontrolers.Run()
+			if err == nil {
+				fmt.Println("Success: get_replicacontrolers.Run()")
+				break
+			} else if i == 5 && err != nil {
+				fmt.Println("Failed: get_replicacontrolers.Run()")
+				return -1, "", fmt.Errorf("Error listing replica controlers: %q with stdout: %q", stderr.String(), stdout.String())
+			}
+		}
 	}
 
 	var getReturn kubectlItem
@@ -157,7 +178,18 @@ func DeleteKubeRC(name, external_port string) (error) {
 	delete_replicacontrolers.Stderr = &stderr
 	err := delete_replicacontrolers.Run()
 	if err != nil {
-		return  fmt.Errorf("Error deleting replica controler: %q and stdout: %q", stderr.String(), stdout.String())
+		for i := 0; i < 5; i++ {
+			time.Sleep(5 * time.Second)
+			fmt.Println("Trying: get_replicacontrolers.Run()")
+			err := delete_replicacontrolers.Run()
+			if err == nil {
+				fmt.Println("Success: delete_replicacontrolers.Run()")
+				break
+			} else if i == 5 && err != nil {
+				fmt.Println("Failed: delete_replicacontrolers.Run()")
+				return  fmt.Errorf("Error deleting replica controler: %q and stdout: %q", stderr.String(), stdout.String())
+			}
+		}
 	}
 	
 	return nil
