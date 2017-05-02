@@ -56,7 +56,7 @@ func CreateKubeRC(name, dockerImage, external_port string, optional_args, env_ar
 			if err == nil {
 				break
 			} else if i == 10 && err != nil {
-				return "", fmt.Errorf("Error creating REPLICACONTROLER named %q with error %q and stdout: %q", name, stderr.String(), stdout.String())
+				return "", fmt.Errorf("Error creating our replicacontroler named %q with error %q and stdout: %q", name, stderr.String(), stdout.String())
 			}
 		}
 	}
@@ -117,7 +117,7 @@ func ReadKubeRC(name, external_port string) (int, string, error) {
 			if err == nil {
 				break
 			} else if i == 10 && err != nil {
-				return -1, "", fmt.Errorf("Error listing replica CONTROLERS: %q with stdout: %q", stderr.String(), stdout.String())
+				return -1, "", fmt.Errorf("Error listing our replicacontrolers: %q with stdout: %q", stderr.String(), stdout.String())
 			}
 		}
 	}
@@ -179,7 +179,7 @@ func DeleteKubeRC(name, external_port string) (error) {
 			if err == nil {
 				break
 			} else if i == 10 && err != nil {
-				return  fmt.Errorf("Error deleting replica CONTROLER: %q and stdout: %q", stderr.String(), stdout.String())
+				return  fmt.Errorf("Error deleting our replicacontroler: %q and stdout: %q", stderr.String(), stdout.String())
 			}
 		}
 	}
