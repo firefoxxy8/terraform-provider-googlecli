@@ -98,9 +98,16 @@ func (c *Config) initKubectl(container, zone string) error {
 		return fmt.Errorf("kubectl is not installed.  Please install and try again\n")
 	}
 
+	rm_kubectl_config := exec.Command("rm", "-rf", "~/.kube/config")
+	var stdout, stderr bytes.Buffer
+	rm_kubectl_config.Stdout = &stdout
+	rm_kubectl_config.Stderr = &stderr
+	err = rm_kubectl_config.Run()
+	if err != nil {
+		return fmt.Errorf("Deleting ~/.kube/config failed: %s and stdout of: %s\n", stderr.String(), stdout.String())
+	}
 	//  project is no longer a cli flag, its only accessible through the config subcommand
 	set_proj_cmd := exec.Command("gcloud", "config", "set", "project", c.Project)
-	var stdout, stderr bytes.Buffer
 	set_proj_cmd.Stdout = &stdout
 	set_proj_cmd.Stderr = &stderr
 	err = set_proj_cmd.Run()
@@ -109,7 +116,7 @@ func (c *Config) initKubectl(container, zone string) error {
 	}
 	
 
-	cred_gen_cmd := exec.Command("gcloud", "--verbosity=debug", "container", "clusters", "get-credentials", container, "--zone=" + zone)
+	cred_gen_cmd := exec.Command("gcloud", "--verbosity=debug", "container", "clusters", "get-credentials", container, "--zone=" + zone, "--project=" + c.Project)
 	cred_gen_cmd.Stdout = &stdout
 	cred_gen_cmd.Stderr = &stderr
 	err = cred_gen_cmd.Run()
